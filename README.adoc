@@ -7,6 +7,8 @@ The services (RendezVous, Service'EZ, Particip'EZ) are developed on the Lutece p
 
 This repository holds the **Docker Compose** stack to run the CiteLibre services locally, plus the Cypress end-to-end tests.
 
+== 🗂️ Repositories
+
 CiteLibre is split into three repositories:
 
 [cols="1,3"]
@@ -14,10 +16,10 @@ CiteLibre is split into three repositories:
 | Repository | Content
 
 | https://github.com/citelibreorg/packaging[packaging]
-| Maven assembly of each service and Docker image build (Jib) - also describes the features of each service
+| Maven assembly of each service (Lutece core + plugins + configuration) and Docker image build (Jib)
 
 | https://github.com/citelibreorg/demo[demo] (this one)
-| Docker Compose stack to run the services locally and Cypress e2e tests
+| Docker Compose stack to run the services locally: shared platform (Keycloak, Matomo, Solr, Elasticsearch/Kibana, ...), one compose file per service, Cypress e2e tests
 
 | https://github.com/citelibreorg/ops[ops]
 | Kubernetes deployment descriptors (Yupiik Bundlebee) and Minikube helper scripts
