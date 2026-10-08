@@ -1,0 +1,219 @@
+name: citelibre-platform
+services:
+
+  mariadb:
+    container_name: citelibre-platform-db
+    image: mariadb:10.6
+    environment:
+      MARIADB_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
+      MARIADB_USER: $MYSQL_USER
+      MARIADB_PASSWORD: $MYSQL_PASSWORD
+    healthcheck:
+      test: [ "CMD", "mariadb", "-u${MYSQL_USER}", "-p${MYSQL_PASSWORD}", "-e", "show databases" ]
+    networks:
+      - citelibre-network
+
+  init-matomo-db:
+    container_name: citelibre-init-matomo-db
+    image: mariadb:10.6
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    command: sh -c "sh /init_db.sh"
+    environment:
+      MYSQL_PWD: $MYSQL_ROOT_PASSWORD
+      INIT_DATABASE_HOST: citelibre-platform-db
+      INIT_DATABASE_NAME: $MATOMO_DATABASE
+      INIT_APP_USER: $MYSQL_USER
+    volumes:
+      - ../citelibre-common/sql/init_db.sh:/init_db.sh
+      - ./matomo/sql/:/sql/
+    networks:
+      - citelibre-network
+
+  init-keycloak-db:
+    container_name: citelibre-init-keycloak-db
+    image: mariadb:10.6
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    command: sh -c "sh /init_db.sh"
+    environment:
+      MYSQL_PWD: $MYSQL_ROOT_PASSWORD
+      INIT_DATABASE_HOST: citelibre-platform-db
+      INIT_DATABASE_NAME: $KEYCLOAK_DB_DATABASE
+      INIT_APP_USER: $MYSQL_USER
+    volumes:
+      - ../citelibre-common/sql/init_db.sh:/init_db.sh
+      - ./keycloak/sql/:/sql/
+    networks:
+      - citelibre-network
+
+  adminer:
+    container_name: citelibre-adminer
+    image: adminer
+    environment:
+      ADMINER_DEFAULT_SERVER: mysql
+      ADMINER_DESIGN: adminer-dark
+    restart: always
+    depends_on:
+      init-matomo-db:
+        condition: service_completed_successfully
+      init-keycloak-db:
+        condition: service_completed_successfully
+    networks:
+      - citelibre-network
+
+  matomo:
+    container_name: citelibre-matomo
+    image: matomo:5.0.3
+    depends_on:
+      init-matomo-db:
+        condition: service_completed_successfully
+    environment:
+      MATOMO_DATABASE_HOST: $MATOMO_DATABASE_HOST
+      MATOMO_DATABASE_ADAPTER: $MATOMO_DATABASE_ADAPTER
+      MATOMO_DATABASE_TABLES_PREFIX: $MATOMO_DATABASE_TABLES_PREFIX
+      MATOMO_DATABASE_USERNAME: $MYSQL_USER
+      MATOMO_DATABASE_PASSWORD: $MYSQL_PASSWORD
+      MATOMO_DATABASE_DBNAME: $MATOMO_DATABASE
+      MARIADB_AUTO_UPGRADE: $MARIADB_AUTO_UPGRADE
+      MARIADB_INITDB_SKIP_TZINFO: $MARIADB_INITDB_SKIP_TZINFO
+    volumes:
+      - ./matomo/config/config.ini.php:/var/www/html/config/config.ini.php
+    networks:
+      - citelibre-network
+
+  #https://github.com/docker-solr/docker-solr-examples/tree/master/custom-configset
+  solr:
+    container_name: citelibre-solr
+    user: solr
+    image: solr:9.1.1
+    mem_limit: 1g
+    command:
+      - solr-precreate
+      - citelibre
+      - /opt/solr/server/solr/configsets/myconfig
+    volumes:
+      - ./solr/citelibre:/opt/solr/server/solr/configsets/myconfig:ro
+    networks:
+      - citelibre-network
+
+  elasticsearch:
+    container_name: citelibre-elastic
+    image: elasticsearch:8.18.4
+    environment:
+      bootstrap.memory_lock: true
+      cluster.name: "citelibre-elasticsearch"
+      network.host: 0.0.0.0
+      discovery.type: single-node
+      xpack.security.enabled: false
+      xpack.security.http.ssl.enabled: false
+      ELASTIC_PASSWORD: $ELASTIC_PASSWORD
+      ELASTICSEARCH_USERNAME: $ELASTICSEARCH_USERNAME
+      ELASTICSEARCH_PASSWORD: $ELASTICSEARCH_PASSWORD
+      ES_JAVA_OPTS: -Xms750m -Xmx750m
+    healthcheck:
+      test: curl -s http://citelibre-elastic:9200 >/dev/null || exit 1
+      interval: 10s
+      timeout: 10s
+      retries: 120
+    networks:
+      - citelibre-network
+
+  kibana:
+    container_name: citelibre-kibana
+    image: kibana:8.18.4
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    environment:
+      SERVER_NAME: citelibre.org
+      SERVER_PORT: 5601
+      SERVER_HOST: "0.0.0.0"
+      SERVER_BASEPATH: "/kibana"
+      SERVER_REWRITEBASEPATH: true
+      SERVER_PUBLICBASEURL: "http://localhost/kibana"
+      ELASTICSEARCH_HOSTS: '["http://citelibre-elastic:9200"]'
+      ELASTICSEARCH_USERNAME: $ELASTICSEARCH_USERNAME
+      ELASTICSEARCH_PASSWORD: $ELASTICSEARCH_PASSWORD
+    links:
+      - elasticsearch
+    volumes:
+      - ./kibana/init.sh:/tmp/init.sh
+      - ./kibana/export.ndjson:/tmp/export.ndjson
+    networks:
+      - citelibre-network
+
+  keycloak:
+    image: keycloak/keycloak:26.3.3-0
+    container_name: citelibre-keycloak
+    depends_on:
+      init-keycloak-db:
+        condition: service_completed_successfully
+    environment:
+      KC_FEATURES: hostname:v2
+
+      KC_HTTP_ENABLED: true
+      KC_HOSTNAME: http://localhost/keycloak
+      KC_HOSTNAME_BACKCHANNEL_DYNAMIC: true
+      KC_PROXY_HEADERS: forwarded
+
+      KC_HEALTH_ENABLED: $KC_HEALTH_ENABLED
+      KC_METRICS_ENABLED: $KC_METRICS_ENABLED
+      ROOT_LOGLEVEL: $KEYCLOAK_ROOT_LOGLEVEL
+
+      KEYCLOAK_USER: $KEYCLOAK_USER
+      KEYCLOAK_PASSWORD: $KEYCLOAK_PASSWORD
+      KEYCLOAK_LOGLEVEL: $KEYCLOAK_LOGLEVEL
+
+      KC_DB: $KEYCLOAK_KC_DB
+      KC_DB_URL: $KEYCLOAK_KC_DB_URL
+      KC_DB_USERNAME: $MYSQL_USER
+      KC_DB_PASSWORD: $MYSQL_PASSWORD
+
+      DB_VENDOR: $KEYCLOAK_DB_VENDOR
+      DB_ADDR: $KEYCLOAK_DB_ADDR
+      DB_PORT: $KEYCLOAK_DB_PORT
+      DB_DATABASE: $KEYCLOAK_DB_DATABASE
+      DB_USER: $MYSQL_USER
+      DB_PASSWORD: $MYSQL_PASSWORD
+      DB_SCHEMA: $KEYCLOAK_DB_SCHEMA
+    volumes:
+      - ./keycloak/themes/citelibre:/opt/keycloak/themes/citelibre
+    entrypoint: "/opt/keycloak/bin/kc.sh --spi-login-protocol-openid-connect-legacy-logout-redirect-uri=true start"
+    networks:
+      - citelibre-network
+
+  httpd:
+    image: httpd:2.4
+    container_name: citelibre-httpd
+    volumes:
+      - ./httpd/conf/httpd.conf:/usr/local/apache2/conf/httpd.conf
+      - ./httpd/conf/httpd-info.conf:/usr/local/apache2/conf/httpd-info.conf
+      - ./httpd/conf/extra/httpd-default.conf:/usr/local/apache2/conf/extra/httpd-default.conf
+      - ./httpd/conf/extra/httpd-mpm.conf:/usr/local/apache2/conf/extra/httpd-mpm.conf
+      - ./httpd/doc/index.html:/usr/local/apache2/htdocs/index.html
+      - ./httpd/doc/images/citelibre.png:/usr/local/apache2/htdocs/images/citelibre.png
+    ports:
+      - "80:80"
+    networks:
+      - citelibre-network
+
+  mailpit:
+    image: axllent/mailpit:v1.18.3
+    container_name: citelibre-mailpit
+    restart: unless-stopped
+    ports:
+      - "1080:8025"
+      - "1025:1025"
+    environment:
+      MP_MAX_MESSAGES: 500
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
+    networks:
+      - citelibre-network
+
+networks:
+  citelibre-network:
+    name: citelibre-network

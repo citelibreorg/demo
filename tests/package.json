@@ -1,0 +1,15 @@
+{
+  "scripts": {
+    "cy:common": "cypress run --headless --browser chrome --config baseUrl=http://localhost/citelibre-rendezvous/jsp/admin/AdminMessage.jsp,specPattern=**/test-common-lutece.cy.js,video=true" ,
+    "cy:clean": "rm -rf cypress/videos/ && rm -rf cypress/results/ && rm -rf cypress/screenshots/ || true"
+  },
+  "dependencies": {
+    "mocha": "^11.7.5",
+    "otplib": "^12.0.1"
+  },
+  "devDependencies": {
+    "cypress": "^15.8.1",
+    "cypress-multi-reporters": "^2.0.5",
+    "mocha-junit-reporter": "^2.2.1"
+  }
+}

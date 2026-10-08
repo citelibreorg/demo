@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CiteLibre app Portal</title>
+
+    <style>
+        *,*::before,*::after{box-sizing:border-box}
+        body,h1,h2,h3,p{margin:0}
+        button,input{font:inherit}
+        :root{
+            --bg:#0b0f14;--surface:#0b0f14;--text:#e5e7eb;--muted:#94a3b8;--line:#1f2937;--accent:#3b82f6;--radius:6px;
+            --font-ui:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;
+        }
+        body{background:var(--bg);color:var(--text);font-family:var(--font-ui);line-height:1.45}
+        .container{max-width:1180px;margin-inline:auto;padding:16px}
+        header{position:sticky;top:0;background:var(--bg);border-bottom:1px solid var(--line)}
+        .nav{display:flex;align-items:center;justify-content:space-between}
+        .brand{display:flex;align-items:center;gap:10px;font-weight:600}
+        .brand .logo{inline-size:18px;block-size:18px;border-radius:3px;background:var(--accent)}
+        .panel{border:1px solid var(--line);border-radius:var(--radius);padding:12px}
+        .hero{padding-block:12px}
+        .hero-grid{display:grid;gap:12px}
+        .search{position:relative;margin-top:10px}
+        .search input{width:100%;padding:8px 32px;border-radius:6px;border:1px solid var(--line);background:var(--surface);color:var(--text)}
+        .search svg{position:absolute;left:8px;top:50%;transform:translateY(-50%);opacity:.7}
+        .notice{display:flex;align-items:center;gap:8px;padding:8px;border:1px solid var(--line);border-radius:6px}
+        .dot{width:8px;height:8px;border-radius:50%;background:#16a34a}
+        .section{margin-top:16px}
+        .section h2{font-size:14px;font-weight:650;margin-bottom:6px;color:var(--muted);text-transform:uppercase}
+        .grid{display:grid;gap:8px}
+        @media(min-width:600px){.grid{grid-template-columns:repeat(2,1fr)}}
+        @media(min-width:980px){.grid{grid-template-columns:repeat(3,1fr)}}
+        .card{display:flex;align-items:flex-start;gap:12px;padding:10px;border:1px solid var(--line);border-radius:6px;background:var(--surface);justify-content:space-between}
+        .avatar{width:32px;height:32px;flex-shrink:0;background:#fff;border-radius:6px;padding:4px;display:flex;align-items:center;justify-content:center}
+        .avatar img{width:100%;height:100%;object-fit:contain}
+        .card h3{font-size:14px;font-weight:600;margin-bottom:4px}
+        .card p{font-size:12px;color:var(--muted);margin-bottom:6px}
+        .open{display:inline}
+		.open a{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:20px;background:var(--accent);color:#fff;text-decoration:none;font-size:12px;font-weight:600;letter-spacing:.3px;transition:background .2s,transform .1s}
+        .open a svg{width:14px;height:14px;stroke:currentColor;stroke-width:2}
+        .open a:hover{background:color-mix(in oklab,var(--accent),#000 15%);transform:translateY(-1px)}
+        footer{margin-top:20px;border-top:1px solid var(--line);padding-block:12px;color:var(--muted);font-size:12px}
+    </style>
+</head>
+<body>
+<header>
+    <div class="container nav">
+        <div class="brand"><div class="logo"></div><span>CiteLibre app Portal</span></div>
+    </div>
+</header>
+
+<main class="container">
+    <section class="hero">
+        <div class="hero-grid">
+            <div class="panel">
+                <h1 class="title">Welcome to the CiteLibre portal!</h1>
+                <p class="subtitle">Find and launch your applications.</p>
+            </div>
+            <aside class="panel">
+                <div class="notice"><span class="dot"></span><strong>All systems operational</strong></div>
+            </aside>
+        </div>
+    </section>
+
+    <section class="section">
+        <h2>Common applications</h2>
+        <div class="grid">
+            <!-- Keycloak -->
+            <article class="card">
+                <div class="avatar"><img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/keycloak.svg" alt="Keycloak logo"/></div>
+                <div>
+                    <h3>Keycloak</h3>
+                    <p>Open source identity and access management for modern applications and services.</p>
+                    <div class="open"><a href="/keycloak" target="_blank" rel="noopener">Open Application <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path d="M14 3h7v7m0-7-9 9"/></svg></a></div>
+                </div>
+            </article>
+
+            <!-- Elasticsearch -->
+            <article class="card">
+                <div class="avatar"><img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/elasticsearch.svg" alt="Elasticsearch logo"/></div>
+                <div>
+                    <h3>Elasticsearch</h3>
+                    <p>Distributed search and analytics engine for all types of data, including text, numeric, geospatial, and more.</p>
+                    <div class="open"><a href="/elasticsearch" target="_blank" rel="noopener">Open Application <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path d="M14 3h7v7m0-7-9 9"/></svg></a></div>
+                </div>
+            </article>
+
+            <!-- Kibana -->
+            <article class="card">
+                <div class="avatar"><img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/kibana.svg" alt="Kibana logo"/></div>
+                <div>
+                    <h3>Kibana</h3>
+                    <p>Visualization and exploration tool for Elasticsearch data with dashboards and charts.</p>
+                    <div class="open"><a href="/kibana" target="_blank" rel="noopener">Open Application <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path d="M14 3h7v7m0-7-9 9"/></svg></a></div>
+                </div>
+            </article>
+
+            <!-- Solr -->
+            <article class="card">
+                <div class="avatar"><img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/apachesolr.svg" alt="Apache Solr logo"/></div>
+                <div>
+                    <h3>Apache Solr</h3>
+                    <p>Open source search platform built on Apache Lucene for full‑text, vector, and geospatial search.</p>
+                    <div class="open"><a href="/apache-solr/solr" target="_blank" rel="noopener">Open Application <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path d="M14 3h7v7m0-7-9 9"/></svg></a></div>
+                </div>
+            </article>
+
+            <!-- Matomo -->
+            <article class="card">
+                <div class="avatar"><img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/matomo.svg" alt="Matomo logo"/></div>
+                <div>
+                    <h3>Matomo</h3>
+                    <p>Web analytics platform providing insights into visitor behavior while respecting privacy.</p>
+                    <div class="open"><a href="/matomo/index.php" target="_blank" rel="noopener">Open Application <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path d="M14 3h7v7m0-7-9 9"/></svg></a></div>
+                </div>
+            </article>
+
+            <!-- Adminer -->
+            <article class="card">
+                <div class="avatar"><img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/adminer.svg" alt="Adminer logo"/></div>
+                <div>
+                    <h3>Adminer</h3>
+                    <p>Lightweight database management tool with a simple web-based interface.</p>
+                    <div class="open"><a href="/adminer" target="_blank" rel="noopener">Open Application <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path d="M14 3h7v7m0-7-9 9"/></svg></a></div>
+                </div>
+            </article>
+        </div>
+    </section>
+	
+	<section class="section">
+        <h2>CiteLibre packages</h2>
+        <div class="grid">
+			<!-- CiteLibre Rendez-vous -->
+            <article class="card">
+                <div class="avatar"><img src="/images/citelibre.png" alt="CiteLibre logo"/></div>
+                <div>
+                    <h3>CiteLibre Rendez-vous</h3>
+                    <p>A pre-package of the CiteLibre application with appointment management features.</p>
+                    <div class="open"><a href="/citelibre-rendezvous/jsp/admin/AdminMenu.jsp" target="_blank" rel="noopener">Open BO<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path d="M14 3h7v7m0-7-9 9"/></svg></a></div>
+                    <div class="open"><a href="/citelibre-rendezvous/" target="_blank" rel="noopener">Open FO <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path d="M14 3h7v7m0-7-9 9"/></svg></a></div>
+                </div>
+            </article>
+
+            <!-- CiteLibre ParticipEZ -->
+            <article class="card">
+                <div class="avatar"><img src="/images/citelibre.png" alt="CiteLibre logo"/></div>
+                <div>
+                    <h3>CiteLibre ParticipEZ</h3>
+                    <p>A pre-package of the CiteLibre application with ParticipEZ features.</p>
+                    <div class="open"><a href="/citelibre-participez/jsp/admin/AdminMenu.jsp" target="_blank" rel="noopener">Open BO<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path d="M14 3h7v7m0-7-9 9"/></svg></a></div>
+                    <div class="open"><a href="/citelibre-participez/" target="_blank" rel="noopener">Open FO <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path d="M14 3h7v7m0-7-9 9"/></svg></a></div>
+                </div>
+            </article>
+		</div>
+    </section>
+</main>
+
+<footer class="container">© <span id="year"></span> CiteLibre.org</footer>
+<script>document.getElementById('year').textContent=new Date().getFullYear();</script>
+</body>
+</html>

@@ -1,0 +1,73 @@
+= Cypress test
+
+== Init
+
+Ensure that you have npm installed. See https://docs.npmjs.com/downloading-and-installing-node-js-and-npm[npm homepage] for further information.
+
+In tests folder, run `npm install`.
+
+== Create tests
+
+Tests must be created in e2e directory and named `<test case>.cy.js`. You can create a new file from scratch or use the cypress studio. See https://www.cypress.io/blog/cypress-studio-a-beginners-guide[Cypress tutorial] fore further information.
+
+To open Cypress studio, run `npx cypress open`.
+
+== Run test
+Before runnin tests, ensure that the platform and the tested packaging are running.
+Tests can be run through the npx cli or with a docker image.
+
+=== Open studio
+
+You can run and visualize tests through the Cypress Studio HMI
+
+```shell
+ npx cypress open
+```
+
+
+=== NPX
+
+See https://docs.cypress.io/app/references/command-line[Cypress CLI documentation] for further information.
+
+Run all tests
+```shell
+ npx cypress run
+```
+
+Run a specific test with a result file with junit format
+
+```shell
+ npx cypress run --runner-ui --browser chrome --spec "cypress/e2e/test-common-lutece.cy.js" --reporter junit
+```
+
+=== NPM commands defined in package.json
+
+Clean results and reports
+
+```shell
+npm run cy:clean
+```
+
+Run common tests
+
+```shell
+npm run cy:common
+```
+
+=== Docker
+
+In order to avoid npm installation you can run test through a docker instance.
+
+Get your user id:
+
+```shell
+id -u
+1000
+```
+
+Put your user id in a variable, and pass it through docker command line
+
+```shell
+myid=`id -u`
+docker run -it --rm --user $myid:$myid -v $PWD:/e2e -w /e2e cypress/included:latest --browser electron --config baseUrl=http://172.19.0.1/citelibre-rendezvous/jsp/admin/AdminMessage.jsp
+```

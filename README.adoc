@@ -1,0 +1,131 @@
+= Cite Libre - Demo
+
+image:https://img.shields.io/github/license/citelibreorg/demo.svg[License]
+
+**CiteLibre** is the software suite provided by Lutece to help you implement a wide range of digital services ready for deployment with your brand image.
+The services (RendezVous, Service'EZ, Particip'EZ) are developed on the Lutece platform, pre-assembled and containerized for easy deployment, and 100% open source.
+
+This repository holds the **Docker Compose** stack to run the CiteLibre services locally, plus the Cypress end-to-end tests.
+
+CiteLibre is split into three repositories:
+
+[cols="1,3"]
+|===
+| Repository | Content
+
+| https://github.com/citelibreorg/packaging[packaging]
+| Maven assembly of each service and Docker image build (Jib) - also describes the features of each service
+
+| https://github.com/citelibreorg/demo[demo] (this one)
+| Docker Compose stack to run the services locally and Cypress e2e tests
+
+| https://github.com/citelibreorg/ops[ops]
+| Kubernetes deployment descriptors (Yupiik Bundlebee) and Minikube helper scripts
+|===
+
+== 📁 Layout
+
+[cols="1,3"]
+|===
+| Path | Content
+
+| `citelibre-platform/`
+| Shared third party components: MariaDB, Keycloak, Elasticsearch, Kibana, Solr, Matomo, Adminer, Mailpit and an httpd portal on port 80
+
+| `citelibre-common/sql/init_db.sh`
+| Database bootstrap script shared by every compose file
+
+| `citelibre-rendezvous/`, `citelibre-serviceez/`, `citelibre-participez/`
+| One service each: `docker-compose.yml`, `.env` and database init `sql/`
+
+| `tests/`
+| Cypress end-to-end tests (see `tests/readme.adoc`)
+|===
+
+All compose files take their variables from the `.env` file next to them. These are local demo credentials, never put real secrets there.
+
+== 🔧 Getting Started
+
+=== CiteLibre backbone
+First of all, you need to run the common platform that holds third party components such as Keycloak, Kibana/ES, Matomo, Solr, etc...
+It also creates the `citelibre-network` docker network used by every service.
+
+[source,bash]
+----
+docker compose -f citelibre-platform/docker-compose.yml up [-d]
+----
+
+You can then access the following service interfaces
+
+- **Matomo** is used to store and display web and app analytics (http://localhost/matomo: admin/adminadmin)
+- **Adminer** to easily access and interact with the application data (http://localhost/adminer?server=rendezvous-db&username=citelibre&db=rendezvous password: rdv)
+- **Keycloak** to manage front-end and back-end authentication and single sign-on (http://localhost/keycloak/admin: admin/admin1234)
+- **Elasticsearch** to store all business-related app data (http://localhost/elasticsearch)
+- **Kibana** to display business analytics dashboards (http://localhost/kibana: lutece/RKOmBI1sWaa*SFm1gx*H)
+
+Or simply go to http://localhost/ that will show a Portal to all deployed applications.
+
+=== Launch a CiteLibre RendezVous instance
+
+The platform must be up first: the service compose files declare `citelibre-network` as an external network.
+
+The `citelibre/citelibre-rendezvous` image must be available, either pulled from DockerHub once released, or built locally from the https://github.com/citelibreorg/packaging[packaging] repository:
+
+[source,bash]
+----
+# in the packaging repository
+mvn clean package -Passembly,rendezvous,docker
+----
+
+The image version used is `CITELIBRE_IMAGE_VERSION` in `citelibre-rendezvous/.env`. It must match the version of the built image.
+
+[source,bash]
+----
+docker compose -f citelibre-rendezvous/docker-compose.yml up [-d]
+----
+
+- Back office at http://localhost/citelibre-rendezvous/jsp/admin/AdminMenu.jsp : admin@paris.fr/coucou
+- Front office at http://localhost/citelibre-rendezvous/jsp/site/Portal.jsp : test@paris.fr/coucou
+
+=== Launch a CiteLibre Service'EZ instance
+**TODO**
+
+=== Launch a CiteLibre Particip'EZ instance
+**TODO**
+
+== 🧪 End-to-end tests
+
+With the platform and the service under test running:
+
+[source,bash]
+----
+cd tests
+npm install
+npm run cy:common
+----
+
+See `tests/readme.adoc` for more details.
+
+== 📖 Documentation
+
+Comprehensive documentation is available at:
+
+🌐 https://citelibre.org
+
+== 🤝 Contributing
+
+We warmly welcome contributions!
+
+Please read the link:CONTRIBUTING.md[contribution guidelines] and the link:CODE_OF_CONDUCT.md[Code of Conduct] first, and report vulnerabilities as described in the link:SECURITY.md[Security Policy].
+
+- Fork the repository
+- Submit your enhancements via pull requests
+- Create https://github.com/citelibreorg/demo/issues[issues]
+- Open https://github.com/citelibreorg/demo/discussions[discussions]
+
+== 📜 License
+
+CiteLibre is released under the BSD 2-Clause License. See the LICENSE file for more details.
+
+== ©️ Copyright
+Copyright © 2025 CiteLibre.

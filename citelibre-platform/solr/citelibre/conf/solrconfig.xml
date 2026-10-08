@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<!--
+
+    BSD 2-Clause License
+
+                                Copyright (c) 2025, CiteLibre
+
+                                Redistribution and use in source and binary forms, with or without
+                                modification, are permitted provided that the following conditions are met:
+
+                                1. Redistributions of source code must retain the above copyright notice, this
+                                list of conditions and the following disclaimer.
+
+                                2. Redistributions in binary form must reproduce the above copyright notice,
+                                this list of conditions and the following disclaimer in the documentation
+                                and/or other materials provided with the distribution.
+
+                                THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+                                AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+                                IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+                                DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+                                FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+                                DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+                                SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+                                CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+                                OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+                                OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+-->
+<!--
+    For more details about configurations options that may appear in this file, see http://wiki.apache.org/solr/SolrConfigXml.
+-->
+<!--
+    This is a trimmed down version of solrconfig.xml for use in lutece's default embedded solr server
+-->
+<config>
+  <luceneMatchVersion>8.8.2</luceneMatchVersion>
+  <requestHandler name="/select" class="solr.SearchHandler">
+    <lst name="defaults">
+      <str name="df">content</str>
+      <str name="q.op">AND</str>
+    </lst>
+  </requestHandler>
+  <requestHandler name="/update" class="solr.UpdateRequestHandler"/>
+
+  <searchComponent class="solr.SpellCheckComponent" name="suggest">
+    <lst name="spellchecker">
+      <str name="name">suggest</str>
+      <str name="classname">org.apache.solr.spelling.suggest.Suggester</str>
+      <str name="lookupImpl">org.apache.solr.spelling.suggest.tst.TSTLookup</str>-->
+      <str name="dictionaryImpl">DocumentDictionaryFactory</str>
+      <str name="field">content</str>  <!-- the indexed field to derive suggestions from -->
+      <str name="buildOnCommit">true</str>
+      <str name="buildOnOptimize">true</str>
+    </lst>
+    <str name="queryAnalyzerFieldType">text</str>
+  </searchComponent>
+
+  <requestHandler class="org.apache.solr.handler.component.SearchHandler" name="/suggest">
+    <lst name="defaults">
+      <str name="spellcheck">true</str>
+      <str name="spellcheck.dictionary">suggest</str>
+      <str name="spellcheck.count">5</str>
+      <str name="spellcheck.collate">true</str>
+      <str name="spellcheck.maxCollations">5</str>
+    </lst>
+    <arr name="components">
+      <str>suggest</str>
+    </arr>
+  </requestHandler>
+</config>

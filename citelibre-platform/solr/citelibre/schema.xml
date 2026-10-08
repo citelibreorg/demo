@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    BSD 2-Clause License
+
+                                Copyright (c) 2025, CiteLibre
+
+                                Redistribution and use in source and binary forms, with or without
+                                modification, are permitted provided that the following conditions are met:
+
+                                1. Redistributions of source code must retain the above copyright notice, this
+                                list of conditions and the following disclaimer.
+
+                                2. Redistributions in binary form must reproduce the above copyright notice,
+                                this list of conditions and the following disclaimer in the documentation
+                                and/or other materials provided with the distribution.
+
+                                THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+                                AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+                                IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+                                DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+                                FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+                                DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+                                SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+                                CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+                                OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+                                OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+-->
+<!-- Solr managed schema - automatically generated - DO NOT EDIT -->
+<schema name="lutece" version="1.6">
+  <uniqueKey>uid</uniqueKey>
+  <fieldType name="_nest_path_" class="solr.NestPathField" maxCharsForDocValues="-1" omitNorms="true" omitTermFreqAndPositions="true" stored="false" multiValued="false"/>
+  <fieldType name="binary" class="solr.BinaryField"/>
+  <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true"/>
+  <fieldType name="date" class="solr.DatePointField" docValues="true"/>
+  <fieldType name="double" class="solr.DoublePointField" docValues="true"/>
+  <fieldType name="float" class="solr.FloatPointField" docValues="true"/>
+  <fieldType name="geoloc" class="solr.LatLonPointSpatialField" docValues="true"/>
+  <fieldType name="int" class="solr.IntPointField" docValues="true"/>
+  <fieldType name="long" class="solr.LongPointField" docValues="true"/>
+  <fieldType name="random" class="solr.RandomSortField" indexed="true"/>
+  <fieldType name="string" class="solr.StrField" sortMissingLast="true"/>
+  <fieldType name="text" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.StopFilterFactory" words="stopwords.txt" ignoreCase="true"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+      <filter class="solr.ASCIIFoldingFilterFactory"/>
+      <filter class="solr.TrimFilterFactory"/>
+      <filter class="solr.SnowballPorterFilterFactory" language="French"/>
+    </analyzer>
+  </fieldType>
+  <fieldType name="text_text" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+  </fieldType>
+  <field name="_nest_parent_" type="string" indexed="true" stored="true"/>
+  <field name="_nest_path_" type="_nest_path_"/>
+  <field name="_root_" type="string" docValues="false" indexed="true" stored="false"/>
+  <field name="_version_" type="long" indexed="false" stored="false"/>
+  <field name="categorie" type="string" multiValued="true" indexed="true" stored="true"/>
+  <field name="content" type="text" indexed="true" required="false" stored="true"/>
+  <field name="date" type="date" indexed="true" stored="true"/>
+  <field name="document_portlet_id" type="string" indexed="true" stored="true"/>
+  <field name="file_content" type="text" indexed="true" stored="true"/>
+  <field name="hiedate" type="string" indexed="true" stored="true"/>
+  <field name="id_resource" type="string" indexed="true" stored="true"/>
+  <field name="metadata" type="string" indexed="true" stored="true"/>
+  <field name="role" type="string" indexed="true" stored="true"/>
+  <field name="site" type="string" indexed="true" stored="true"/>
+  <field name="summary" type="text" indexed="true" stored="true"/>
+  <field name="text" type="text" multiValued="true" indexed="true" stored="false"/>
+  <field name="title" type="text" indexed="true" stored="true"/>
+  <field name="type" type="string" indexed="true" stored="true"/>
+  <field name="uid" type="string" indexed="true" required="true" stored="true"/>
+  <field name="url" type="text" indexed="true" stored="true"/>
+  <field name="xml_content" type="text" indexed="true" stored="true"/>
+  <dynamicField name="*_geoloc_0_coordinate" type="double" indexed="true" stored="true"/>
+  <dynamicField name="*_geoloc_1_coordinate" type="double" indexed="true" stored="true"/>
+  <dynamicField name="*_list_date" type="date" multiValued="true" indexed="true" stored="true"/>
+  <dynamicField name="*_geolayer" type="string" indexed="true" stored="true"/>
+  <dynamicField name="*_geojson" type="string" indexed="false" stored="true"/>
+  <dynamicField name="*_string" type="string" indexed="true" stored="true"/>
+  <dynamicField name="*_geoloc" type="geoloc" indexed="true" stored="true"/>
+  <dynamicField name="random*" type="random" indexed="true" stored="false"/>
+  <dynamicField name="*_text" type="text_text" indexed="true" stored="true"/>
+  <dynamicField name="*_date" type="date" indexed="true" stored="true"/>
+  <dynamicField name="*_long" type="long" indexed="true" stored="true"/>
+  <dynamicField name="*_list" type="text" multiValued="true" indexed="true" stored="true"/>
+  <copyField source="categorie" dest="text"/>
+  <copyField source="content" dest="text"/>
+  <copyField source="file_content" dest="text"/>
+  <copyField source="metadata" dest="text"/>
+  <copyField source="summary" dest="text"/>
+  <copyField source="title" dest="text"/>
+</schema>
