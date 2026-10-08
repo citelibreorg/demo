@@ -86,8 +86,8 @@ The image version used is `CITELIBRE_IMAGE_VERSION` in `citelibre-rendezvous/.en
 docker compose -f citelibre-rendezvous/docker-compose.yml up [-d]
 ----
 
-- Back office at http://localhost/citelibre-rendezvous/jsp/admin/AdminMenu.jsp : admin@paris.fr/coucou
-- Front office at http://localhost/citelibre-rendezvous/jsp/site/Portal.jsp : test@paris.fr/coucou
+- Back office at http://localhost/citelibre-rendezvous/jsp/admin/AdminMenu.jsp : admin@citelibre.org/coucou
+- Front office at http://localhost/citelibre-rendezvous/jsp/site/Portal.jsp : test@citelibre.org/coucou
 
 === Launch a CiteLibre Service'EZ instance
 **TODO**

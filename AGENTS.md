@@ -43,7 +43,7 @@ CiteLibre is split into three sibling repositories (usually cloned side by side)
   Volume paths are relative to the compose file (`../citelibre-common/...`): keep the
   layout when moving files.
 - Back office: `http://localhost/citelibre-rendezvous/jsp/admin/AdminMenu.jsp`
-  (`admin@paris.fr` / `coucou`); front office: `/jsp/site/Portal.jsp`.
+  (`admin@citelibre.org` / `coucou`); front office: `/jsp/site/Portal.jsp`.
 
 ## E2E tests (Cypress)
 
