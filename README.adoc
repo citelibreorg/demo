@@ -65,11 +65,11 @@ The only prerequisite is https://docs.docker.com/get-docker/[Docker] (Docker Des
 
 | Front office
 | http://localhost/citelibre-rendezvous/jsp/site/Portal.jsp
-| `test@citelibre.org` / `coucou`
+| `test@citelibre.org` / `citelibre`
 
 | Back office
 | http://localhost/citelibre-rendezvous/jsp/admin/AdminMenu.jsp
-| `admin@citelibre.org` / `coucou`
+| `admin@citelibre.org` / `citelibre`
 
 | Mails sent by the services
 | http://localhost/mailpit/
@@ -131,8 +131,8 @@ The platform must be up first: the service compose files declare `citelibre-netw
 docker compose -f citelibre-rendezvous/docker-compose.yml up [-d]
 ----
 
-- Back office at http://localhost/citelibre-rendezvous/jsp/admin/AdminMenu.jsp : admin@citelibre.org/coucou
-- Front office at http://localhost/citelibre-rendezvous/jsp/site/Portal.jsp : test@citelibre.org/coucou
+- Back office at http://localhost/citelibre-rendezvous/jsp/admin/AdminMenu.jsp : admin@citelibre.org/citelibre
+- Front office at http://localhost/citelibre-rendezvous/jsp/site/Portal.jsp : test@citelibre.org/citelibre
 
 The `citelibre/packaging-rendezvous` image is pulled from Docker Hub (published by the `packaging` release workflow), unless it was built locally from the https://github.com/citelibreorg/packaging[packaging] repository:
 

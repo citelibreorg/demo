@@ -130,8 +130,8 @@ start() {
 
 CiteLibre $app is ready:
   Portal        $BASE_URL/
-  Front office  $BASE_URL/citelibre-$app/jsp/site/Portal.jsp   test@citelibre.org / coucou
-  Back office   $BASE_URL/citelibre-$app/jsp/admin/AdminMenu.jsp   admin@citelibre.org / coucou
+  Front office  $BASE_URL/citelibre-$app/jsp/site/Portal.jsp   test@citelibre.org / citelibre
+  Back office   $BASE_URL/citelibre-$app/jsp/admin/AdminMenu.jsp   admin@citelibre.org / citelibre
   Mails sent    $BASE_URL/mailpit/
 
 Stop with ./citelibre.sh stop (data is kept), start from scratch with ./citelibre.sh reset

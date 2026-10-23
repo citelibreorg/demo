@@ -7,7 +7,7 @@ describe('Cite Libre :: Rendez Vous', () => {
     cy.visit(Cypress.config("baseUrl")) // get to backoffice main page
         .get('button[title="OK"]').click() // accept user warning and redirect to keycloak authent
         .get('#username').type("admin@citelibre.org")
-        .get('#password').type("coucou")
+        .get('#password').type("citelibre")
         .get('#kc-login').click(); // login;
     cy.get('#menu-mobile i.ti').click();
     cy.get('#main-menu a[href="#SYSTEM"]').click();
@@ -36,7 +36,7 @@ describe('Cite Libre :: Rendez Vous', () => {
     cy.get('i.ti').click();
     cy.get('[name="username"]').click();
     cy.get('[name="username"]').type('admin@citelibre.org');
-    cy.get('[name="password"]').type('coucou');
+    cy.get('[name="password"]').type('citelibre');
     cy.get('[name="login"]').click();
     cy.get('#menu-mobile i.ti').click();
     cy.get('#main-menu a[href="#MANAGERS"] div.menu-label').click();

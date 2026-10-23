@@ -181,8 +181,8 @@ function Start-CiteLibre([string[]]$Arguments) {
 
 CiteLibre $app is ready:
   Portal        $BaseUrl/
-  Front office  $BaseUrl/citelibre-$app/jsp/site/Portal.jsp   test@citelibre.org / coucou
-  Back office   $BaseUrl/citelibre-$app/jsp/admin/AdminMenu.jsp   admin@citelibre.org / coucou
+  Front office  $BaseUrl/citelibre-$app/jsp/site/Portal.jsp   test@citelibre.org / citelibre
+  Back office   $BaseUrl/citelibre-$app/jsp/admin/AdminMenu.jsp   admin@citelibre.org / citelibre
   Mails sent    $BaseUrl/mailpit/
 
 Stop with citelibre.cmd stop (data is kept), start from scratch with citelibre.cmd reset
