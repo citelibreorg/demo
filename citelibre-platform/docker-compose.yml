@@ -158,6 +158,8 @@ services:
       KC_HOSTNAME: http://localhost/keycloak
       KC_HOSTNAME_BACKCHANNEL_DYNAMIC: true
       KC_PROXY_HEADERS: forwarded
+      # single node: no cluster discovery (the DB dump holds a stale JGROUPS_PING member)
+      KC_CACHE: local
 
       KC_HEALTH_ENABLED: $KC_HEALTH_ENABLED
       KC_METRICS_ENABLED: $KC_METRICS_ENABLED
@@ -204,9 +206,6 @@ services:
     image: axllent/mailpit:v1.18.3
     container_name: citelibre-mailpit
     restart: unless-stopped
-    ports:
-      - "1080:8025"
-      - "1025:1025"
     environment:
       MP_MAX_MESSAGES: 500
       MP_WEBROOT: mailpit

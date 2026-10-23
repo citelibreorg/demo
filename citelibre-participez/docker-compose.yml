@@ -36,7 +36,7 @@ services:
 
   citelibre-participez:
     container_name: citelibre-participez
-    image: citelibre/citelibre-participez:${CITELIBRE_IMAGE_VERSION}
+    image: citelibre/packaging-participez:${CITELIBRE_IMAGE_VERSION}
     environment:
       LUTECE_PROD_URL: $LUTECE_PROD_URL
       LUTECE_ADMIN_PROD_URL: $LUTECE_ADMIN_PROD_URL
@@ -92,3 +92,6 @@ services:
 networks:
   citelibre-network:
     external: true
+
+volumes:
+  participez-logs:

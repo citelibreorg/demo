@@ -36,7 +36,7 @@ services:
 
   citelibre-serviceez:
     container_name: citelibre-serviceez
-    image: citelibre/citelibre-serviceez:${CITELIBRE_IMAGE_VERSION}
+    image: citelibre/packaging-serviceez:${CITELIBRE_IMAGE_VERSION}
     environment:
       LUTECE_PROD_URL: $LUTECE_PROD_URL
       LUTECE_ADMIN_PROD_URL: $LUTECE_ADMIN_PROD_URL
@@ -92,3 +92,6 @@ services:
 networks:
   citelibre-network:
     external: true
+
+volumes:
+  serviceez-logs:

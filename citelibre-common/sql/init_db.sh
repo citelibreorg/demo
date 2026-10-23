@@ -1,3 +1,8 @@
+if mariadb --user=root -h $INIT_DATABASE_HOST -e "use $INIT_DATABASE_NAME" 2>/dev/null; then
+  echo "[INIT DB] Database $INIT_DATABASE_NAME already exists on host $INIT_DATABASE_HOST: nothing to do (remove the containers to start from scratch)"
+  exit 0
+fi
+
 echo "[INIT DB] Creating database $INIT_DATABASE_NAME on host $INIT_DATABASE_HOST for app user $INIT_APP_USER"
 mariadb --user=root -h $INIT_DATABASE_HOST -e "create database $INIT_DATABASE_NAME"
 

@@ -31,6 +31,9 @@ CiteLibre is split into three repositories:
 |===
 | Path | Content
 
+| `citelibre.sh`, `citelibre.cmd` (+ `citelibre.ps1`)
+| Demo launcher for Linux / macOS and Windows (see <<_quick_start>>)
+
 | `citelibre-platform/`
 | Shared third party components: MariaDB, Keycloak, Elasticsearch, Kibana, Solr, Matomo, Adminer, Mailpit and an httpd portal on port 80
 
@@ -46,7 +49,51 @@ CiteLibre is split into three repositories:
 
 All compose files take their variables from the `.env` file next to them. These are local demo credentials, never put real secrets there.
 
-== 🔧 Getting Started
+== 🚀 Quick start
+
+The only prerequisite is https://docs.docker.com/get-docker/[Docker] (Docker Desktop on Windows and macOS), started, with about 8 GB of memory available (4 GB with `--lite`). Port 80 must be free.
+
+. Download this repository: `git clone https://github.com/citelibreorg/demo.git`, or *Code > Download ZIP* on GitHub, then unzip it.
+. Start the demo:
+** Windows: double-click `citelibre.cmd`
+** Linux, macOS: `./citelibre.sh`
+. Wait for the `CiteLibre rendezvous is ready` message (a few minutes the first time, the images are downloaded): the browser opens the portal at http://localhost/.
+
+[cols="1,2,2"]
+|===
+| What | URL | Account
+
+| Front office
+| http://localhost/citelibre-rendezvous/jsp/site/Portal.jsp
+| `test@citelibre.org` / `coucou`
+
+| Back office
+| http://localhost/citelibre-rendezvous/jsp/admin/AdminMenu.jsp
+| `admin@citelibre.org` / `coucou`
+
+| Mails sent by the services
+| http://localhost/mailpit/
+|
+|===
+
+The launcher takes a command, an application and options (`citelibre.cmd` takes the same arguments as `./citelibre.sh`):
+
+[source,bash]
+----
+./citelibre.sh                           # same as: ./citelibre.sh start rendezvous
+./citelibre.sh start rendezvous --lite   # light platform: no Elasticsearch, Kibana, Solr, Matomo, Adminer
+./citelibre.sh start rendezvous --version 2.0.2   # another image version, local or on Docker Hub
+./citelibre.sh status                    # list the CiteLibre containers
+./citelibre.sh logs rendezvous           # follow the Lutece logs (application.log, error.log)
+./citelibre.sh stop                      # stop everything, data is kept for the next start
+./citelibre.sh reset                     # remove everything, the next start begins from scratch
+----
+
+The launcher uses the local image when it exists (built from the `packaging` repository), otherwise it pulls it from Docker Hub. It checks Docker and port 80, starts the platform then the application in the right order, and waits until they answer.
+
+== 🔧 Docker Compose
+
+The launcher only wraps the following Docker Compose commands, which can also be run by hand.
 
 === CiteLibre backbone
 First of all, you need to run the common platform that holds third party components such as Keycloak, Kibana/ES, Matomo, Solr, etc...
@@ -57,6 +104,13 @@ It also creates the `citelibre-network` docker network used by every service.
 docker compose -f citelibre-platform/docker-compose.yml up [-d]
 ----
 
+To save memory, start only the services the applications need (MariaDB, Keycloak, httpd and Mailpit): the applications still work, without search and analytics.
+
+[source,bash]
+----
+docker compose -f citelibre-platform/docker-compose.yml up -d mariadb init-keycloak-db keycloak httpd mailpit
+----
+
 You can then access the following service interfaces
 
 - **Matomo** is used to store and display web and app analytics (http://localhost/matomo: admin/adminadmin)
@@ -64,22 +118,13 @@ You can then access the following service interfaces
 - **Keycloak** to manage front-end and back-end authentication and single sign-on (http://localhost/keycloak/admin: admin/admin1234)
 - **Elasticsearch** to store all business-related app data (http://localhost/elasticsearch)
 - **Kibana** to display business analytics dashboards (http://localhost/kibana: lutece/RKOmBI1sWaa*SFm1gx*H)
+- **Mailpit** catches every email sent by the services (http://localhost/mailpit)
 
 Or simply go to http://localhost/ that will show a Portal to all deployed applications.
 
 === Launch a CiteLibre RendezVous instance
 
 The platform must be up first: the service compose files declare `citelibre-network` as an external network.
-
-The `citelibre/citelibre-rendezvous` image must be available, either pulled from DockerHub once released, or built locally from the https://github.com/citelibreorg/packaging[packaging] repository:
-
-[source,bash]
-----
-# in the packaging repository
-mvn clean package -Passembly,rendezvous,docker
-----
-
-The image version used is `CITELIBRE_IMAGE_VERSION` in `citelibre-rendezvous/.env`. It must match the version of the built image.
 
 [source,bash]
 ----
@@ -88,6 +133,25 @@ docker compose -f citelibre-rendezvous/docker-compose.yml up [-d]
 
 - Back office at http://localhost/citelibre-rendezvous/jsp/admin/AdminMenu.jsp : admin@citelibre.org/coucou
 - Front office at http://localhost/citelibre-rendezvous/jsp/site/Portal.jsp : test@citelibre.org/coucou
+
+The `citelibre/packaging-rendezvous` image is pulled from Docker Hub (published by the `packaging` release workflow), unless it was built locally from the https://github.com/citelibreorg/packaging[packaging] repository:
+
+[source,bash]
+----
+# in the packaging repository
+mvn clean package -Passembly,rendezvous,docker
+----
+
+The local build produces the same image name as Docker Hub (`citelibre/packaging-rendezvous:<version>`), and Docker Compose only pulls an image that is missing locally: a locally built image with the same version is used as is.
+
+The image version used is `CITELIBRE_IMAGE_VERSION` in `citelibre-rendezvous/.env`. To run another version built locally (the profile's `citelibre.packaging.version` in the `packaging` pom), override it from the shell, which takes precedence over the `.env` file:
+
+[source,bash]
+----
+CITELIBRE_IMAGE_VERSION=2.0.2 docker compose -f citelibre-rendezvous/docker-compose.yml up [-d]
+----
+
+The databases are created on the first start only: `stop` / `start` (or `up` again) keeps the data, `down` removes it. The Lutece logs are in the `rendezvous-logs` named volume (`CITELIBRE_DOCKER_VOLUME_PATH` in the `.env`, which also accepts an absolute host path).
 
 === Launch a CiteLibre Service'EZ instance
 **TODO**

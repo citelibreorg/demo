@@ -13,7 +13,7 @@ Tests must be created in e2e directory and named `<test case>.cy.js`. You can cr
 To open Cypress studio, run `npx cypress open`.
 
 == Run test
-Before runnin tests, ensure that the platform and the tested packaging are running.
+Before running tests, ensure that the platform and the tested packaging are running, for instance with `./citelibre.sh` at the root of this repository.
 Tests can be run through the npx cli or with a docker image.
 
 === Open studio

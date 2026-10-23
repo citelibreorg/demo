@@ -23,6 +23,21 @@ CiteLibre is split into three sibling repositories (usually cloned side by side)
 - `citelibre-<app>/`: `docker-compose.yml`, `.env`, `sql/*.sql` for one service.
 - `tests/`: Cypress e2e tests (standalone npm project).
 
+## Launcher
+
+- `citelibre.sh` (Linux / macOS) and `citelibre.ps1` (Windows, run through
+  `citelibre.cmd`) implement the same commands (`start [app] [--lite] [--version x]
+  [--no-browser]`, `stop`, `reset`, `status`, `logs [app]`): **change both together**.
+  `citelibre.ps1` must stay ASCII and Windows PowerShell 5.1 compatible (no `??`,
+  ternary, `&&`). It can be tested on Linux with a portable `pwsh`.
+- `start` uses the local image when present, else pulls it; waits for
+  `/keycloak/realms/citelibre_backoffice` then the app `Portal.jsp`.
+  `--lite` starts only `mariadb init-keycloak-db keycloak httpd mailpit` (RendezVous
+  works, Cypress `cy:common` green; the app logs `UnknownHostException
+  citelibre-elastic`, expected).
+- `.gitattributes` forces LF on `*.sh` (mounted in Linux containers, a CRLF
+  `init_db.sh` breaks on Windows checkouts) and CRLF on `*.cmd` / `*.ps1`.
+
 ## Local stack (order matters)
 
 1. `docker compose -f citelibre-platform/docker-compose.yml up -d` — creates the named
@@ -30,16 +45,21 @@ CiteLibre is split into three sibling repositories (usually cloned side by side)
 2. `docker compose -f citelibre-rendezvous/docker-compose.yml up` — app compose files
    declare `citelibre-network` as **external**, so they fail if the platform is not up
    first.
-- The app image `citelibre/citelibre-<app>:${CITELIBRE_IMAGE_VERSION}` must exist
-  locally: build it in the `packaging` repo with
-  `mvn package -Passembly,<app>,docker`.
+- The app image `citelibre/packaging-<app>:${CITELIBRE_IMAGE_VERSION}` is pulled from
+  Docker Hub (pushed by the `packaging` tag workflow) unless it exists locally: build it
+  in the `packaging` repo with `mvn package -Passembly,<app>,docker` (same name).
 - `CITELIBRE_IMAGE_VERSION` in each app's `.env` must match the profile's
   `citelibre.packaging.version` in the `packaging` pom — the serviceez `.env` (1.0.9) is
   stale vs its pom profile (1.0.2).
 - All compose files take their variables from the `.env` next to them (local dev
   credentials — never put real secrets there).
 - DB bootstrap: shared `citelibre-common/sql/init_db.sh` + each app's `sql/*.sql`
-  (choose the auth provider SQL file that is mounted, not the commented one).
+  (choose the auth provider SQL file that is mounted, not the commented one). It skips
+  an existing database, so `stop` / `up` again keeps the data; `down` resets it.
+- Lutece logs go to a named volume `<app>-logs` (`CITELIBRE_DOCKER_VOLUME_PATH`), not
+  a host folder: a bind mount is created root-owned on Linux.
+- Keycloak runs with `KC_CACHE: local`: the DB dump holds a stale `JGROUPS_PING` row.
+- Mailpit is only reachable through httpd (`/mailpit`), no host port is published.
   Volume paths are relative to the compose file (`../citelibre-common/...`): keep the
   layout when moving files.
 - Back office: `http://localhost/citelibre-rendezvous/jsp/admin/AdminMenu.jsp`

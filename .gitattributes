@@ -1,0 +1,5 @@
+# Shell scripts run in Linux containers or shells: keep LF even on a Windows checkout
+*.sh text eol=lf
+# Windows launcher
+*.cmd text eol=crlf
+*.ps1 text eol=crlf

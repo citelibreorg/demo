@@ -36,7 +36,7 @@ services:
 
   citelibre-rendezvous:
     container_name: citelibre-rendezvous
-    image: citelibre/citelibre-rendezvous:${CITELIBRE_IMAGE_VERSION}
+    image: citelibre/packaging-rendezvous:${CITELIBRE_IMAGE_VERSION}
     environment:
       LUTECE_PROD_URL: $LUTECE_PROD_URL
       LUTECE_ADMIN_PROD_URL: $LUTECE_ADMIN_PROD_URL
@@ -92,3 +92,6 @@ services:
 networks:
   citelibre-network:
     external: true
+
+volumes:
+  rendezvous-logs:
