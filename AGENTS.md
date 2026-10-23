@@ -56,6 +56,14 @@ CiteLibre is split into three sibling repositories (usually cloned side by side)
 - DB bootstrap: shared `citelibre-common/sql/init_db.sh` + each app's `sql/*.sql`
   (choose the auth provider SQL file that is mounted, not the commented one). It skips
   an existing database, so `stop` / `up` again keeps the data; `down` resets it.
+- RendezVous demo data: `citelibre-rendezvous/sql/03-demo-appointments.sql` (workflow with
+  mail tasks, 3 forms, bookings) is **generated** by `03-demo-appointments.py` next to it:
+  edit the Python and regenerate (`python3 03-demo-appointments.py 03-demo-appointments.sql`).
+  Demo only: `ops` targets production and must not get these data sets. Dates are
+  relative to `CURDATE()` (n-th weekday after/before today); fixed ids assume the
+  `00-init.sql` dump (workflow 1, states 1-2, action 1, tasks 1-2 already taken).
+  Workflow mails go to Mailpit (`mail.server=mailpit` in the image). Action icons are left
+  NULL: the BO appointment list builds a broken relative URL for them.
 - Lutece logs go to a named volume `<app>-logs` (`CITELIBRE_DOCKER_VOLUME_PATH`), not
   a host folder: a bind mount is created root-owned on Linux.
 - Keycloak runs with `KC_CACHE: local`: the DB dump holds a stale `JGROUPS_PING` row.

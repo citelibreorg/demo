@@ -47,8 +47,7 @@ describe('Cite Libre :: Rendez Vous', () => {
     cy.get('#menu-mobile').click();
     cy.get('#main-menu a.active div.menu-label').click();
     cy.get('#right-list a[feature-url="jsp/admin/plugins/workflow/ManageWorkflow.jsp"] h3.mb-1 span').click();
-    cy.get('#lutece-page-wrapper div.lutece-column').click();
-    cy.get('#lutece-page-wrapper a[href="jsp/admin/plugins/workflow/ModifyWorkflow.jsp?id_workflow=1"]').click();
+    cy.get('#lutece-page-wrapper a[href="jsp/admin/plugins/workflow/ModifyWorkflow.jsp?id_workflow=2"]').click();
     cy.get('#lutece-page-wrapper [name="save"] span.d-xxl-inline-flex').click();
   });
 });

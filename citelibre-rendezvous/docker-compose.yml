@@ -31,6 +31,8 @@ services:
       #choose between one the following authentication providers
       #- ./sql/01-auth-database.sql:/sql/01-auth-database.sql
       - ./sql/02-auth-keycloak.sql:/sql/02-auth-keycloak.sql
+      # demo data: appointment workflow (mails in Mailpit), forms and bookings
+      - ./sql/03-demo-appointments.sql:/sql/03-demo-appointments.sql
     networks:
       - citelibre-network
 

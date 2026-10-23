@@ -32,7 +32,7 @@ CiteLibre is split into three repositories:
 | Path | Content
 
 | `citelibre.sh`, `citelibre.cmd` (+ `citelibre.ps1`)
-| Demo launcher for Linux / macOS and Windows (see <<_quick_start>>)
+| Demo launcher for Linux / macOS and Windows (see <<quick-start>>)
 
 | `citelibre-platform/`
 | Shared third party components: MariaDB, Keycloak, Elasticsearch, Kibana, Solr, Matomo, Adminer, Mailpit and an httpd portal on port 80
@@ -49,6 +49,7 @@ CiteLibre is split into three repositories:
 
 All compose files take their variables from the `.env` file next to them. These are local demo credentials, never put real secrets there.
 
+[[quick-start]]
 == 🚀 Quick start
 
 The only prerequisite is https://docs.docker.com/get-docker/[Docker] (Docker Desktop on Windows and macOS), started, with about 8 GB of memory available (4 GB with `--lite`). Port 80 must be free.
@@ -90,6 +91,129 @@ The launcher takes a command, an application and options (`citelibre.cmd` takes 
 ----
 
 The launcher uses the local image when it exists (built from the `packaging` repository), otherwise it pulls it from Docker Hub. It checks Docker and port 80, starts the platform then the application in the right order, and waits until they answer.
+
+The demo comes with ready-made data (appointments, users, emails) and a walkthrough to present it: see <<demo-data>>.
+
+[[demo-data]]
+== 🎬 Demo data
+
+The demo starts with ready-made data, so there is something to show right away. They are recreated from scratch by `./citelibre.sh reset` followed by `./citelibre.sh`: use it to get a clean demo back after a presentation.
+
+=== Accounts
+
+[cols="1,1,1"]
+|===
+| Use | Account | Where
+
+| Back office (agent)
+| `admin@citelibre.org` / `citelibre`
+| `/citelibre-<app>/jsp/admin/AdminMenu.jsp`
+
+| Front office (user)
+| `test@citelibre.org` / `citelibre`
+| `/citelibre-<app>/jsp/site/Portal.jsp`
+
+| Keycloak administration
+| `admin` / `admin1234`
+| http://localhost/keycloak/admin/
+|===
+
+Every email sent by the services is caught by Mailpit (http://localhost/mailpit): nothing leaves the demo, any address can be used.
+
+=== RendezVous: appointments
+
+Three appointment forms, opened from two months ago to one year ahead:
+
+[cols="2,2,1,1"]
+|===
+| Form | Opening hours | Slots | Places per slot
+
+| Passeport et carte nationale d'identité (`ID…` references)
+| Monday to Friday, 9:00-12:00 and 13:40-17:00
+| 20 min
+| 1
+
+| Permanence logement (`LOG…`)
+| Tuesday and Thursday, 14:00-17:00
+| 30 min
+| 1
+
+| Inscriptions scolaires et périscolaires (`SCO…`)
+| Monday, Wednesday and Friday, 8:30-12:00
+| 30 min
+| 2
+|===
+
+About forty bookings by fictitious users (`@example.org` emails) fill part of the two coming weeks, with free slots left. A few are in the past (honoured or missed) and one is cancelled. The dates are computed from the day the database is created, so the calendar always looks current.
+
+The *Rendez-vous* workflow follows each appointment and emails the user at each step:
+
+[cols="1,2,2"]
+|===
+| Action | Triggered by | Email to the user
+
+| Confirmation
+| a booking (automatic)
+| confirmation, with the reference and a cancel link
+
+| Rendez-vous honoré
+| an agent, in the back office
+| thank you
+
+| Usager absent
+| an agent, in the back office
+| missed appointment, invitation to book again
+
+| Annuler le rendez-vous
+| an agent, or the cancel link of the confirmation email
+| cancellation, the slot is freed
+|===
+
+A walkthrough to show the whole cycle:
+
+. *Book as a user*: open the forms list http://localhost/citelibre-rendezvous/jsp/site/Portal.jsp?page=appointment&view=getViewFormList (accept the cookie banner to see the calendar), choose a form, a free slot, then enter a name and any email address.
+. *Read the confirmation* in Mailpit: reference, date, cancel link.
+. *Manage as an agent*: in the back office, menu *Gestion des rendez-vous*, open a form to see its bookings by calendar, by filter or by day; the new booking is there, in the *À venir* state.
+. *Process an appointment*: run *Rendez-vous honoré* or *Usager absent* on a booking: its state changes and the user receives an email in Mailpit.
+. *Cancel as a user*: follow the cancel link of the confirmation email: the cancellation email arrives and the slot is free again in the calendar.
+
+==== Changing the demo data set
+
+The RendezVous demo data are loaded by `citelibre-rendezvous/sql/03-demo-appointments.sql`, run after the database dump (`00-init.sql`) when the database is created. This SQL file is *generated* by the Python script next to it, `citelibre-rendezvous/sql/03-demo-appointments.py`: do not edit the SQL by hand, edit the script and regenerate.
+
+Why a script: the SQL holds about 370 lines, mostly mechanical (one opening time slot per form, day and slot duration, booked slots whose taken and remaining places must match their bookings, fictitious emails and phone numbers derived from the names). The script only holds the readable data and checks it before writing the SQL:
+
+[cols="1,3"]
+|===
+| Variable | Content
+
+| `FORMS`
+| the appointment forms: title, reference prefix, description, opening days and hours, lunch break, slot duration, places per slot, color
+
+| `BOOKINGS`
+| the bookings, one tuple per booking: `(form, weekday, week, time, first name, last name, state)`. `week` is relative to the import day: `1` is the next occurrence of that weekday, `2` the one after, `-1` the last one before today. For instance `(1, MON, 1, '09:00', 'Claire', 'Martin', U)` is "next Monday at 9:00, upcoming". States: `U` upcoming, `H` honoured, `A` absent, `C` cancelled
+
+| `MAILS`
+| subject and message of the emails sent by the workflow actions. The messages are FreeMarker templates: `${firstName}`, `${lastName}`, `${date_appointment}`, `${time_appointment}`, `${reference}`, `${url_cancel}`...
+|===
+
+The script refuses a booking outside the opening days or hours, during the break, not aligned on a slot, or exceeding the places of its slot. The dates are not written in the SQL: MariaDB computes them from `CURDATE()` at import time, so the data set stays current whatever the day the demo is (re)initialized.
+
+To apply a change (Python 3, no dependency):
+
+[source,bash]
+----
+cd citelibre-rendezvous/sql
+python3 03-demo-appointments.py 03-demo-appointments.sql
+cd ../..
+./citelibre.sh reset && ./citelibre.sh
+----
+
+Commit both the script and the regenerated SQL. These are demo data only: the production deployment (`ops` repository) starts empty and must not get them.
+
+=== Particip'EZ
+
+The Particip'EZ database comes with sample content: an *Incident reporting on public space* form with its *Reporting problems on public space* workflow, and blog articles.
 
 == 🔧 Docker Compose
 
@@ -133,6 +257,8 @@ docker compose -f citelibre-rendezvous/docker-compose.yml up [-d]
 
 - Back office at http://localhost/citelibre-rendezvous/jsp/admin/AdminMenu.jsp : admin@citelibre.org/citelibre
 - Front office at http://localhost/citelibre-rendezvous/jsp/site/Portal.jsp : test@citelibre.org/citelibre
+
+The ready-made demo data are described in <<demo-data>>.
 
 The `citelibre/packaging-rendezvous` image is pulled from Docker Hub (published by the `packaging` release workflow), unless it was built locally from the https://github.com/citelibreorg/packaging[packaging] repository:
 
